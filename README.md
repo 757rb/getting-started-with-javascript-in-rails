@@ -38,7 +38,7 @@ http://www.procata.com/blog/archives/2005/05/10/expert-programmers/
   1) Show or hide sections.
   2) Dynamic elements based on a select.
   3) Etc...
-* The anonymous function to `jQuery()` is shorthand for `$(document).ready()`.
+* The anonymous function to `jQuery(ƒ)` is shorthand for `$(document).ready(ƒ)`.
 * All logic in anonymous functions and handlers.
 * Even simple example demonstrates complexity and right drift.
 
@@ -86,16 +86,61 @@ function submitUserForm(e) {
 
 #### Competent
 
-* All your JavaScript is at the bottom of the page.
-* Can safely ignore 
+* Same application.js from above.
+* Now, all your JavaScript is loaded at the bottom of the page.
+
+```erb
+<body>
+  <%= yield %>
+  <script type="text/javascript" src="/assets/application.js"></script>
+  <%= yield :footer %>
+</body>
+```
+
+```erb
+<%= form_for @user do |f| %>
+  ...
+<% end %>
+<% content_for :footer do %>
+  <script type="text/javascript">
+    $('#user').submit(submitUserForm);
+  </script>
+<% end %>
+```
+
+* No need to use document ready callback.
+
 
 ## Level 4
 
 #### Proficient
 
 * Now using CoffeeScript.
-* Class encapsulates a specific DOM tree concern.
+* Class encapsulates a specific DOM element.
 * Single instance instantiation solves per-page-specific.
+* Confidence in your DOM and CSS class usage.
+
+```ruby
+class ComplicatedUserForm
+
+  @form: '#user'
+  @load: -> new @(@form) if $(@form).length
+
+  constructor: (el) ->
+    @form = $(el)
+    @email = $('#user_email')
+    @form.data @constructor.name, @
+
+  submit: (event) ->
+    unless @email.val()?.length
+      event.preventDefault() if event?
+      alert 'Please enter your email.'
+
+ComplicatedUserForm.load()
+```
+
+* Class here is private. File typically always in a closure.
+* 
 
 
 ## Level 5
@@ -103,3 +148,4 @@ function submitUserForm(e) {
 #### Expert
 
 * Using a MV* framework. 
+
